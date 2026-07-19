@@ -11,9 +11,17 @@ So total there is the info of n points in space
 Now there are two more arrays of size m , one consisting of x coordinates and other y coordinates correspondingly
 These points are the turning points in a path.
 Examples.
-Say i went from 1, 1 to 1, 5 to 2, 5 so the given arrays will be
-1, 1, 2
-1, 5, 5
+The Input Arrays
+1. General Variables:N = 3 (Number of points to check)
+                     M = 3 (Number of turning points in the path)
+2. Target Points Information (N) items:
+pX = [2, 4, 1]
+pY = [5, 3, 5]
+This gives us three coordinates to check: (2, 5), (4, 3), and (1, 5).
+3. Path Turning Points (M) items:
+tX = [1, 1, 2] 
+tY = [1, 5, 5]
+This creates a continuous path through these coordinates: (1, 1)  (1, 5) (2, 5)
 In the given path , we have to find how many of the given n points lie.
 */
 
