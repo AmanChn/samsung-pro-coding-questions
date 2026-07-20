@@ -20,6 +20,56 @@ Ans = 2 (which is the length+ of “22”)
 
 #include <bits/stdc++.h>
 using namespace std;
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        long long n;
+        cin >> n;
+        vector<string> arr(n);
+        
+        for(int i=0;i<n;i++){
+            cin >> arr[i];
+        }
+       
+        // mp[a][b] = Max len of a valid chain whose first char is 'a' and last char is digit 'b'
+        vector<vector<long long>> mp(10, vector<long long>(10, 0));
+       
+        // starting from last because string can be forme with i<j
+        // & also as the current state depends on the future state so we will have ans for future available to use
+        for (long long i = n - 1; i >= 0; i--) {
+            int first = arr[i][0] - '0';
+            int last = arr[i].back() - '0';
+            long long len = arr[i].size();
+            
+            // check with all 10 numers that if a str starting with 'last' char is there or not
+            for (long long j = 0; j <= 9; j++) {
+                if (mp[last][j] != 0) {
+                    mp[first][j] = max(mp[first][j], mp[last][j] + len); // we can make a new str and increase the size
+                }
+            }
+            
+            //if no chain starts from last, then the current string alone should still be a valid chain.
+            mp[first][last] = max(mp[first][last], len); // to consider single strings
+        }
+       
+        // as the final str need to have both 'first' and 'last' char same, find the max in diagonal
+        long long res = 0;
+        for (long long i = 0; i <= 9; i++) {
+            res = max(res, mp[i][i]);
+        }
+       
+        cout << res << endl;
+    }
+    
+    return 0;
+}
+
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
 using ll = long long;
 const int mx = 1e5+1;
 vector<string>v;
@@ -49,41 +99,4 @@ int main(){
     cout<<ans<<endl;
   }
 }
-/*
-#include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-int main() {
-    fastio;
-    int t;
-    cin >> t;
-    while (t--) {
-        ll n;
-        cin >> n;
-        vector<string> v(n);
-        for (auto &s : v) cin >> s;
-       
-        vector<vector<ll>> mp(10, vector<ll>(10, 0));
-       
-        for (ll i = n - 1; i >= 0; i--) {
-            int first = v[i][0] - '0', last = v[i].back() - '0';
-            for (ll j = 0; j <= 9; j++) {
-                if (mp[last][j] != 0) {
-                    mp[first][j] = max(mp[first][j], mp[last][j] + (ll)v[i].length());
-                }
-            }
-            mp[first][last] = max(mp[first][last], (ll)v[i].length());
-        }
-       
-        ll res = 0;
-        for (ll i = 0; i <= 9; i++) {
-            res = max(res, mp[i][i]);
-        }
-       
-        cout << res << "\n";
-    }
-    return 0;
-}
-
 */
