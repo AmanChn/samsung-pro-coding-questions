@@ -171,4 +171,188 @@ int main() {
 //     }
 //     cout<<max_goods<<endl;
 //     return 0;
-// }.
+// }
+
+// #include <bits/stdc++.h>
+// using namespace std;
+
+// const long long INF = 1e18;
+
+// struct Node {
+//     int x, y;
+// };
+
+// int dx[4] = {-1, 1, 0, 0};
+// int dy[4] = {0, 0, -1, 1};
+
+// int main() {
+//     ios::sync_with_stdio(false);
+//     cin.tie(nullptr);
+
+//     int T;
+//     cin >> T;
+
+//     while (T--) {
+
+//         int H, W, C;
+//         cin >> H >> W >> C;
+
+//         vector<vector<int>> grid(H, vector<int>(W));
+
+//         Node garage, airport;
+//         vector<Node> warehouses;
+
+//         for (int i = 0; i < H; i++) {
+//             for (int j = 0; j < W; j++) {
+
+//                 cin >> grid[i][j];
+
+//                 if (grid[i][j] == 2)
+//                     garage = {i, j};
+
+//                 else if (grid[i][j] == 3)
+//                     warehouses.push_back({i, j});
+
+//                 else if (grid[i][j] == 4)
+//                     airport = {i, j};
+//             }
+//         }
+
+//         int K = warehouses.size();
+
+//         vector<Node> points;
+//         points.push_back(garage);
+
+//         for (auto &x : warehouses)
+//             points.push_back(x);
+
+//         points.push_back(airport);
+
+//         int M = K + 2;
+
+//         vector<vector<int>> dist(M, vector<int>(M, -1));
+
+//         auto bfs = [&](int src) {
+
+//             vector<vector<int>> d(H, vector<int>(W, -1));
+
+//             queue<pair<int,int>> q;
+
+//             q.push({points[src].x, points[src].y});
+//             d[points[src].x][points[src].y] = 0;
+
+//             while (!q.empty()) {
+
+//                 auto cur = q.front();
+//                 q.pop();
+
+//                 int x = cur.first;
+//                 int y = cur.second;
+
+//                 for (int k = 0; k < 4; k++) {
+
+//                     int nx = x + dx[k];
+//                     int ny = y + dy[k];
+
+//                     if (nx < 0 || ny < 0 || nx >= H || ny >= W)
+//                         continue;
+
+//                     if (grid[nx][ny] == 1)
+//                         continue;
+
+//                     if (d[nx][ny] != -1)
+//                         continue;
+
+//                     d[nx][ny] = d[x][y] + 1;
+//                     q.push({nx, ny});
+//                 }
+//             }
+
+//             for (int i = 0; i < M; i++)
+//                 dist[src][i] = d[points[i].x][points[i].y];
+//         };
+
+//         for (int i = 0; i < M; i++)
+//             bfs(i);
+
+//         int FULL = 1 << K;
+
+//         vector<vector<long long>> dp(FULL,
+//                                      vector<long long>(K, INF));
+
+//         // Initial states
+//         for (int i = 0; i < K; i++) {
+
+//             if (dist[0][i + 1] == -1)
+//                 continue;
+
+//             dp[1 << i][i] = dist[0][i + 1];
+//         }
+
+//         // Bitmask DP
+//         for (int mask = 1; mask < FULL; mask++) {
+
+//             int goods = __builtin_popcount(mask);
+
+//             for (int last = 0; last < K; last++) {
+
+//                 if (!(mask & (1 << last)))
+//                     continue;
+
+//                 if (dp[mask][last] == INF)
+//                     continue;
+
+//                 for (int nxt = 0; nxt < K; nxt++) {
+
+//                     if (mask & (1 << nxt))
+//                         continue;
+
+//                     if (dist[last + 1][nxt + 1] == -1)
+//                         continue;
+
+//                     int newMask = mask | (1 << nxt);
+
+//                     long long newCost =
+//                         dp[mask][last]
+//                         + 1LL * dist[last + 1][nxt + 1] * (goods + 1);
+
+//                     dp[newMask][nxt] =
+//                         min(dp[newMask][nxt], newCost);
+//                 }
+//             }
+//         }
+
+//         int ans = 0;
+
+//         for (int mask = 1; mask < FULL; mask++) {
+
+//             int goods = __builtin_popcount(mask);
+
+//             for (int last = 0; last < K; last++) {
+
+//                 if (!(mask & (1 << last)))
+//                     continue;
+
+//                 if (dp[mask][last] == INF)
+//                     continue;
+
+//                 if (dist[last + 1][K + 1] == -1)
+//                     continue;
+
+//                 long long total =
+//                     dp[mask][last]
+//                     + 1LL * dist[last + 1][K + 1] * (goods + 1);
+
+//                 if (total <= C)
+//                     ans = max(ans, goods);
+//             }
+//         }
+
+//         cout << ans << "\n";
+//     }
+
+//     return 0;
+// }
+
+
+
