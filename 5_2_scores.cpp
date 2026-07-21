@@ -19,48 +19,57 @@ constraints -
 using namespace std;
 int maxDiffD(const vector<int> &a, const vector<int> &b)
 {
-    vector<int> sa = a, sb = b;
-    sort(sa.begin(), sa.end());
-    sort(sb.begin(), sb.end());
+    vector<int> sorted_a = a, sorted_b = b;
+    sort(sorted_a.begin(), sorted_a.end());
+    sort(sorted_b.begin(), sorted_b.end());
 
     set<int> s;
-    for (int x : sa)s.insert(x);
-    for (int x : sb)s.insert(x);
+    for (int x : sorted_a) s.insert(x);
+    for (int x : sorted_b) s.insert(x);
 
-    vector<int> c;
-    c.push_back(*s.begin() - 1);
-    for (int x : s)
-        c.push_back(x);
-    c.push_back(*s.rbegin() + 1);
+    vector<int> candidate_d; //to store all unique elemets from both array which will be search space for d
+    candidate_d.push_back(*s.begin() - 1); //adding 1 less than min value at start
+    for (int x : s) candidate_d.push_back(x);
+    candidate_d.push_back(*s.rbegin() + 1); // adding 1 more than max value at end
 
     int mx = INT_MIN, bestD = 0;
-    for (int d : c)
-    {
-        int ca = upper_bound(sa.begin(), sa.end(), d) - sa.begin();
-        int cb = upper_bound(sb.begin(), sb.end(), d) - sb.begin();
+    for (int d : candidate_d){
+     
+        // find the itr to first value that is bigger than d then do itr subtraction sa.begin() to get 
+        // the number of elements in the vector  that are less than or equal to d
+        int ca = upper_bound(sorted_a.begin(), sorted_a.end(), d) - sorted_a.begin();
+        int cb = upper_bound(sorted_b.begin(), sorted_b.end(), d) - sorted_b.begin();
 
-        int as = ca + (sa.size() - ca) * 2;
-        int bs = cb + (sb.size() - cb) * 2;
+        //array Score = (#elements ≤ D) × 1 + (#elements > D) × 2
+        //let count = number of elements ≤ D
+        //score = count + (n-count)×2 = 2n-count
+        int score_a = ca + (sorted_a.size() - ca) * 2;
+        int score_b = cb + (sorted_b.size() - cb) * 2;
 
-        int diff = as - bs;
-        if (diff > mx)
-        {
+        int diff = score_a - score_b;
+        if (diff > mx){
             mx = diff;
             bestD = d;
         }
     }
+ 
     return bestD;
 }
+
 int main()
 {
     int t;cin >> t;
     while (t--){
-        int n, m;cin >> n >> m;
+        int n, m;
+        cin >> n >> m;
         vector<int> a(n), b(m);
-        for (int i = 0; i < n; i++)cin >> a[i];
-        for (int i = 0; i < m; i++)cin >> b[i];
+     
+        for (int i = 0; i < n; i++) cin >> a[i];
+        for (int i = 0; i < m; i++) cin >> b[i];
+     
         cout << "Optimal D: " << maxDiffD(a, b) << endl;
     }
+ 
     return 0;
 }
 
