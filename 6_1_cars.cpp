@@ -11,81 +11,117 @@ The paths of cars can overlap.
 M range till ±10^17
 N range till 100
 */
-#include<bits/stdc++.h>
-#define ll long long
-#define MAXN 100
-
+#include <bits/stdc++.h>
 using namespace std;
 
-ll a[MAXN];
+using ll = long long;
+using i128 = __int128_t;
 
-ll parity(ll n) {
-	// finding the max distance that we have to reach
-	ll x = *max_element(a, a + n);
-
-	// finding number of drives / turns it will take to reach or cross the max distance
-	ll turns = (ll)ceil((sqrt(1 + 8 * x) - 1 ) / 2);
-
-	// finding the actual distance reached for the above number of turns
-	ll actual = (turns * (turns + 1)) / 2;
-
-	// replacing the distances with the parity of the difference between distance reached and the distance to be reached
-	for(int i = 0; i < n; i++)
-		a[i] = (actual - a[i]) & 1;
-
-	// returning the turns for the answer
-	return turns;
+//---------------------------------------------------------------
+// Returns total distance travelled after k drives
+//---------------------------------------------------------------
+i128 totalDistance(ll k)
+{
+    return (i128)k * (k + 1) / 2;
 }
 
-void solve(){
-	ll n, m;
-	cin >> n >> m;
+//---------------------------------------------------------------
+// Binary search minimum k such that
+// 1+2+...+k >= maxDistance
+//---------------------------------------------------------------
+ll minimumTurns(ll maxDistance)
+{
+    ll low = 0;
+    ll high = 2000000000LL;
 
-	ll p, q, x, y;
-	cin >> p >> q;
-	for(int i = 0 ; i < n; i++) {
-		cin >> x >> y;
+    while(low < high)
+    {
+        ll mid = (low + high) / 2;
 
-		// calculating the min distace to reach the center
-		a[i] = abs(max(p, x) - min(p, x)) + abs(max(q, y) - min(q, y));
-	}
+        if(totalDistance(mid) >= maxDistance)
+            high = mid;
+        else
+            low = mid + 1;
+    }
 
-	// converting the array to the parity array of extra distance as well as returning the turns 
-	ll turns = parity(n);
-
-	for(int i = 0; i < n; i++) {
-		if(a[0] != a[i]){
-			cout << -1 << "\n";
-			return;
-		}
-	}
-
-	// if the parity of the distance array is 1 and the turns is also 1 then in the next turn it will be even.
-	// we cannot filp in even turns, so we need 2 extra turns.
-	if(a[0] && turns & 1)
-		cout << turns + 2 << "\n";
-
-	// else we can filp in the next turn
-	else if(a[0])
-		cout << turns + 1 << "\n";
-
-	// else we are already at the destination
-	else
-		cout << turns << "\n";
-
+    return low;
 }
 
-int main(){
-    ios_base :: sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-	ll t, cnt = 1; 
-	cin >> t;
-	while(t--){
-		cout << "# " << cnt << " ";
-		solve();
-		cnt++;
-	}
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int T;
+    cin >> T;
+
+    while(T--)
+    {
+        int N;
+        cin >> N;
+
+        long long p,q;
+        cin >> p >> q;
+
+        vector<pair<ll,ll>> cars(N);
+
+        ll maxDist = 0;
+
+        vector<int> parity;
+
+        //-------------------------------------------------------
+        // Calculate Manhattan distance of every car
+        //-------------------------------------------------------
+
+        for(int i=0;i<N;i++)
+        {
+            cin>>cars[i].first>>cars[i].second;
+
+            ll dist=
+            abs(cars[i].first-p)+
+            abs(cars[i].second-q);
+
+            maxDist=max(maxDist,dist);
+
+            parity.push_back(dist&1);
+        }
+
+        //-------------------------------------------------------
+        // All cars must have same parity
+        //-------------------------------------------------------
+
+        bool ok=true;
+
+        for(int i=1;i<N;i++)
+        {
+            if(parity[i]!=parity[0])
+            {
+                ok=false;
+                break;
+            }
+        }
+
+        if(!ok)
+        {
+            cout<<-1<<"\n";
+            continue;
+        }
+
+        //-------------------------------------------------------
+        // Minimum turns required only by distance
+        //-------------------------------------------------------
+
+        ll turns=minimumTurns(maxDist);
+
+        //-------------------------------------------------------
+        // Fix parity if needed
+        //-------------------------------------------------------
+
+        while( (totalDistance(turns)-maxDist)%2!=0 )
+            turns++;
+
+        cout<<turns<<"\n";
+    }
 }
 
 /*
