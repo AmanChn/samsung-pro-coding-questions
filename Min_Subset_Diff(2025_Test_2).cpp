@@ -25,14 +25,22 @@ int main()
     vector<int> L = {3, 3, 7, 3, 1};
 
     int total = accumulate(L.begin(), L.end(), 0);
-    bitset<10001> dp;
-    dp[0] = 1;
+    
+    // dp[s] = 1 if subset sum 's' is possible
+    bitset<10001> dp; // Set according to maximum possible total sum
+    dp[0] = 1; // Empty subset
 
     for (int x : L)
     {
+        // Shift all existing sums by x and OR them
         dp |= (dp << x);
     }
 
+    //If one subset has sum S then other subset has Total-S
+    //abs((Total-S)-S) = abs(Total-2S)
+    //So we simply want a subset whose sum is as close as possible to Total/2
+    
+    // Find subset whose sum is closest to total/2
     int best = 0;
     for (int i = total / 2; i >= 0; --i)
     {
